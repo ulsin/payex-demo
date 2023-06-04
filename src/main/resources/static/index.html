@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payex Demo</title>
+    <script>
+        async function getStuff() {
+            const response = await fetch('api/test')
+            // const jsonData = await response.json()
+            console.log(response)
+        }
+
+        console.log("test")
+
+
+        // fetch('api/test').then((resolve) => resolve.json()).then((data) => console.log(data))
+
+        // this one works with string data
+        fetch('api/test').then((response) => response.text()).then((text) => console.log(text))
+
+    </script>
+</head>
+<body>
+Heyo
+</body>
+</html>
