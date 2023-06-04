@@ -24,7 +24,6 @@ public class Repo {
         try {
             List<Test> testList = db.query("select * from Test", new BeanPropertyRowMapper<>(Test.class));
             System.out.println(testList);
-
         } catch (Exception e) {
             System.out.println("error in repotest");
             System.out.println(e);
