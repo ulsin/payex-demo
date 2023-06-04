@@ -22,7 +22,7 @@ public class TvController {
     @GetMapping("/test")
     public String getTest(HttpServletResponse response) throws IOException {
         System.out.println("Controller Get Test was run");
-        repo.Test();
+        repo.RepoTest();
 
         return "test from rest";
     }
