@@ -1,4 +1,4 @@
-package com.tvapi.payex;
+package com.tvapi.payex.models;
 
 public class Test {
     private String field1;
