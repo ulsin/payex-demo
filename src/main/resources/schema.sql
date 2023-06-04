@@ -12,3 +12,12 @@ create table Show
     showId int          not null,
     primary key (name)
 );
+
+create table Episode
+(
+    showId  int          not null,
+    name    varchar(255) not null,
+    season  int          not null,
+    episode int          not null,
+    primary key (showId, name, season, episode)
+);

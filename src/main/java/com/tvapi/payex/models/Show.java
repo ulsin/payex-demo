@@ -27,4 +27,12 @@ public class Show {
     public void setShowId(int showId) {
         this.showId = showId;
     }
+
+    @Override
+    public String toString() {
+        return "Show{" +
+                "name='" + name + '\'' +
+                ", showId=" + showId +
+                '}';
+    }
 }

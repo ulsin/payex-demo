@@ -1,7 +1,10 @@
 package com.tvapi.payex;
 
+import com.tvapi.payex.models.Episode;
 import com.tvapi.payex.models.Show;
+import com.tvapi.payex.models.ShowWithEpisodes;
 import com.tvapi.payex.models.Test;
+import org.apache.tomcat.util.json.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +19,14 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Scanner;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 @Repository
 public class Repo {
@@ -29,17 +38,40 @@ public class Repo {
     public Repo() {
         System.out.println("Repo constructor ran");
 
-        try {
-            getShowFromAPIByName("Girls");
 
-        } catch (Exception e) {
-            System.out.println("getShowFromAPIByName crasshed");
-        }
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         populateDbFromFile();
+        List<Show> shows = getAllShows();
+
+        for (Show show : shows) {
+            populateDbFromApi(show.getName());
+        }
+
+        logger.info("All shows are now populated from the api, and info rests in database");
+    }
+
+    public void populateDbFromApi(String name) {
+        try {
+            ShowWithEpisodes showWithEpisodes = getShowWithEpisodesFromAPIByName(name);
+
+            Show show = showWithEpisodes.getShow();
+
+            List<Episode> episodes = showWithEpisodes.getEpisodes();
+
+            updateShowIdByName(show);
+
+            for (Episode episode : episodes) {
+                insertEpisode(episode);
+            }
+
+
+        } catch (Exception e) {
+            System.out.println("getShowFromAPIByName crashed");
+            logger.error(String.valueOf(e));
+        }
     }
 
     public void populateDbFromFile() {
@@ -47,7 +79,7 @@ public class Repo {
         System.out.println(showNames);
 
         for (String showName : showNames) {
-            insertShow(showName, -1);
+            insertShow(new Show(showName, -1));
         }
     }
 
@@ -68,15 +100,21 @@ public class Repo {
         return showNames;
     }
 
-    private void getShowIdFromApi() {
-        List<Show> shows = getAllShows();
-    }
-
-    public void insertShow(String name, int showId) {
+    public void insertShow(Show show) {
         try {
-            db.update("insert into Show(name, showId) values(?, ?)", name, showId);
+            db.update("insert into Show(name, showId) values(?, ?)", show.getName(), show.getShowId());
         } catch (Exception e) {
             System.out.println("Error in Repo.insertShow()");
+            logger.error(String.valueOf(e));
+        }
+    }
+
+    public void insertEpisode(Episode episode) {
+        try {
+            db.update("insert into Episode(showId, name, season, episode) values (?, ?, ?, ?)",
+                    episode.getShowId(), episode.getName(), episode.getSeason(), episode.getEpisode());
+        } catch (Exception e) {
+            System.out.println("Error when inserting episode into db");
             logger.error(String.valueOf(e));
         }
     }
@@ -91,26 +129,41 @@ public class Repo {
         }
     }
 
-    public void updateShowIdByName(String name, int showId) {
+    public void updateShowIdByName(Show show) {
         try {
-            db.update("update Show set showId=? where name=?", showId, name);
+            db.update("update Show set showId=? where name=?", show.getShowId(), show.getName());
         } catch (Exception e) {
             System.out.println("Error in Repo.updateShowByName()");
             logger.error(String.valueOf(e));
         }
     }
 
-    // TODO move to controller, deals with network stuff
-    public void getShowFromAPIByName(String name) throws IOException {
-        URL url = new URL("https://api.tvmaze.com/singlesearch/shows?q=" + name);
+    // Saw they had endpoint for getting show and episodes, a bit more lazy than doing it one per,
+    // but doing it like this to better respect how many queries they want
+    public ShowWithEpisodes getShowWithEpisodesFromAPIByName(String name) throws IOException {
+        int showId = -1;
+        List<Episode> episodes = new ArrayList<>();
+
+
+        URL url = new URL("https://api.tvmaze.com/singlesearch/shows?q=" + name + "&embed=episodes");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
-//        connection.setRequestProperty("Content-Type", "application/json");
-//        connection.setDoOutput(true);
 
         int status = connection.getResponseCode();
 
-        if (status == 200) {
+        if (status == 429) {
+            System.out.println("Status is 429, sleeping for 20s to respect the API restrictions");
+
+            try {
+                Thread.sleep(20 * 1000);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+
+        } else if (status != 200) {
+            System.out.println("Status was " + status);
+            return null;
+        } else {
             StringBuilder stringBuilder = new StringBuilder();
             Scanner scanner = new Scanner(url.openStream());
 
@@ -120,12 +173,26 @@ public class Repo {
 
             scanner.close();
 
-            System.out.println(stringBuilder);
-        } else {
-            System.out.println("Status was " + status);
+            JSONObject json = new JSONObject(new JSONTokener(stringBuilder.toString()));
+
+            showId = json.getInt("id");
+
+
+            JSONArray episodesArray = json.getJSONObject("_embedded").getJSONArray("episodes");
+
+            for (int i = 0; i < episodesArray.length(); i++) {
+                JSONObject episodeJson = episodesArray.getJSONObject(i);
+                String episodeName = episodeJson.getString("name");
+                int season = episodeJson.getInt("season");
+                int episode = episodeJson.getInt("number");
+                episodes.add(new Episode(showId, episodeName, season, episode));
+            }
+
         }
 
         connection.disconnect();
+
+        return new ShowWithEpisodes(new Show(name, showId), episodes);
     }
 
     public void RepoTest() {
