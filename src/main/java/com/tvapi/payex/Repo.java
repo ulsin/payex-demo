@@ -1,9 +1,6 @@
 package com.tvapi.payex;
 
-import com.tvapi.payex.models.Episode;
-import com.tvapi.payex.models.Show;
-import com.tvapi.payex.models.ShowWithEpisodes;
-import com.tvapi.payex.models.Test;
+import com.tvapi.payex.models.*;
 import org.apache.tomcat.util.json.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +34,6 @@ public class Repo {
 
     public Repo() {
         System.out.println("Repo constructor ran");
-
-
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -46,11 +41,26 @@ public class Repo {
         populateDbFromFile();
         List<Show> shows = getAllShows();
 
-        for (Show show : shows) {
-            populateDbFromApi(show.getName());
-        }
+        populateDbFromApi("Wynonna Earp");
+
+
+//        for (Show show : shows) {
+//            populateDbFromApi(show.getName());
+//        }
 
         logger.info("All shows are now populated from the api, and info rests in database");
+
+        // TODO generate report
+
+
+    }
+
+    public void reportTop10Shows() {
+//        db.query();
+    }
+
+    public void reportTopNetwork() {
+
     }
 
     public void populateDbFromApi(String name) {
@@ -79,7 +89,7 @@ public class Repo {
         System.out.println(showNames);
 
         for (String showName : showNames) {
-            insertShow(new Show(showName, -1));
+            insertShow(new Show(showName, -1, -1.0, -1));
         }
     }
 
@@ -102,7 +112,8 @@ public class Repo {
 
     public void insertShow(Show show) {
         try {
-            db.update("insert into Show(name, showId) values(?, ?)", show.getName(), show.getShowId());
+            db.update("insert into Show(name, showId, rating, networkId) values(?, ?, ?, ?)",
+                    show.getName(), show.getShowId(), show.getRating(), show.getNetworkId());
         } catch (Exception e) {
             System.out.println("Error in Repo.insertShow()");
             logger.error(String.valueOf(e));
@@ -111,8 +122,8 @@ public class Repo {
 
     public void insertEpisode(Episode episode) {
         try {
-            db.update("insert into Episode(showId, name, season, episode) values (?, ?, ?, ?)",
-                    episode.getShowId(), episode.getName(), episode.getSeason(), episode.getEpisode());
+            db.update("insert into Episode(showId, name, season, episode, rating) values (?, ?, ?, ?, ?)",
+                    episode.getShowId(), episode.getName(), episode.getSeason(), episode.getEpisode(), episode.getRating());
         } catch (Exception e) {
             System.out.println("Error when inserting episode into db");
             logger.error(String.valueOf(e));
@@ -131,7 +142,7 @@ public class Repo {
 
     public void updateShowIdByName(Show show) {
         try {
-            db.update("update Show set showId=? where name=?", show.getShowId(), show.getName());
+            db.update("update Show set showId=?, rating=?, networkId=? where name=?", show.getShowId(), show.getRating(), show.getNetworkId(), show.getName());
         } catch (Exception e) {
             System.out.println("Error in Repo.updateShowByName()");
             logger.error(String.valueOf(e));
@@ -142,6 +153,8 @@ public class Repo {
     // but doing it like this to better respect how many queries they want
     public ShowWithEpisodes getShowWithEpisodesFromAPIByName(String name) throws IOException {
         int showId = -1;
+        double showRating = -1.0;
+        int networkId = -1;
         List<Episode> episodes = new ArrayList<>();
 
 
@@ -176,6 +189,17 @@ public class Repo {
             JSONObject json = new JSONObject(new JSONTokener(stringBuilder.toString()));
 
             showId = json.getInt("id");
+            showRating = json.getJSONObject("rating").getDouble("average");
+
+            JSONObject networkJson = json.getJSONObject("network");
+            networkId = networkJson.getInt("id");
+            String networkName = networkJson.getString("name");
+            String networkCountry = networkJson.getJSONObject("country").getString("name");
+
+            System.out.println("show rating + network id" + showRating + " " + networkId);
+
+            // TODO make sure this goes somewhere
+            Network network = new Network(networkName, networkId, networkCountry);
 
 
             JSONArray episodesArray = json.getJSONObject("_embedded").getJSONArray("episodes");
@@ -185,14 +209,14 @@ public class Repo {
                 String episodeName = episodeJson.getString("name");
                 int season = episodeJson.getInt("season");
                 int episode = episodeJson.getInt("number");
-                episodes.add(new Episode(showId, episodeName, season, episode));
+                double episodeRating = episodeJson.getJSONObject("rating").getDouble("average");
+                episodes.add(new Episode(showId, episodeName, season, episode, episodeRating, networkId));
             }
-
         }
 
         connection.disconnect();
 
-        return new ShowWithEpisodes(new Show(name, showId), episodes);
+        return new ShowWithEpisodes(new Show(name, showId, showRating, networkId), episodes);
     }
 
     public void RepoTest() {

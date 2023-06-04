@@ -1,4 +1,30 @@
-## Liten tid
+# kjøring
+
+## nettleser
+<localhost:8080> for å se frontend
+
+## konsoll
+args if any
+
+./mvnw i terminal
+
+## db konsoll
+
+- [ ] check url
+- [ ] username and login
+
+# rapporter
+
+## next week
+skjønte ikke helt hva som spurtes om her, mange av showene er jo ferdig kjørt, og vil ikke ha noen info om neste uke
+
+## Top 10 - Skal liste serier sortert på rating
+
+ez game ez life
+
+## Top network - Skal liste "network" samt aktuelle tv-serier basert på gjennomsnittlig-rating.
+
+# Liten tid
 
 Hadde liten tid så kunne ikke gjøre alt til standarden jeg ønsker
 
@@ -10,6 +36,8 @@ Hadde liten tid så kunne ikke gjøre alt til standarden jeg ønsker
 
 ## Om Samle struktur
 ideally så ville jeg ha hatt at shows skulle ha en liste med episoder, men fikk problemer med beanpropertyrowmapper så bestemte meg for å ikke ha det sånn, dog med ORM så ville jeg jo hatt det sånn sånn at koblingen ble lik mellom objekt modellen og tabell strukturen i databasen.
+
+Syntes det er litt dårlig at jeg returnerer et samleobjekt men siden det var limit på API queries og man får alt i samme query så tenkte jeg at det var best å ta alt i en
 
 ## Plain UI
 

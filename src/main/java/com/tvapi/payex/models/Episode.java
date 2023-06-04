@@ -6,14 +6,17 @@ public class Episode {
     private int season;
     private int episode;
 
+    private double rating;
+
     public Episode() {
     }
 
-    public Episode(int showId, String name, int season, int episode) {
+    public Episode(int showId, String name, int season, int episode, double rating, int networkId) {
         this.showId = showId;
         this.name = name;
         this.season = season;
         this.episode = episode;
+        this.rating = rating;
     }
 
     @Override
@@ -23,6 +26,7 @@ public class Episode {
                 ", name='" + name + '\'' +
                 ", season=" + season +
                 ", episode=" + episode +
+                ", rating=" + rating +
                 '}';
     }
 
@@ -56,5 +60,13 @@ public class Episode {
 
     public void setEpisode(int episode) {
         this.episode = episode;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
     }
 }
