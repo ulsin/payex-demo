@@ -1,19 +1,23 @@
 # kjøring
 
 ## nettleser
-<localhost:8080> for å se frontend
+<localhost:8080> for å se frontend, etter at man ser at loggeren skriver at alle filer er laget så burde den være klar (tar under 30-ish sekunder fra kjøring)
 
-## konsoll
-args if any
+## selve applikasjonen
 
-./mvnw i terminal
+`./mvnw` i terminal burde funke om man har java 20 instalert, om ikke så bare åpne programmet i intellij, konfigurer med open-jdk-20, og trykk play på main funksjonen i `PayexApplication.java`
 
 ## db konsoll
 
-- [ ] check url
-- [ ] username and login
+gå hit: <localhost:8080/secret-h2-console/>
+
+pass på at feltene ser ut som dette:
+
+![](h2-console.png)
 
 # rapporter
+
+disse kommer ut i fil eller kan sees og lastes net i nettleser, slettes og skrives på nutt ved kjøring, tenkte å la bruker velge rapport fra commandline args eller ved curl requests men ble ikke nok tid så forble ved ui eller i fil systemet
 
 ## next week
 skjønte ikke helt hva som spurtes om her, mange av showene er jo ferdig kjørt, og vil ikke ha noen info om neste uke
@@ -24,25 +28,22 @@ skjønte ikke helt denne heller, hva menes?
 
 ## Top 10 - Skal liste serier sortert på rating
 
-ez game ez life
+denne blir skrevet til fil og kan finnes ved frontend
 
 ## Top Network
 Gjorde i kode istedenfor i database, skippet å lage network struktur / implementere den ordentlig
 
 ## Summary
 
-ez game ez life
-## Top network - Skal liste "network" samt aktuelle tv-serier basert på gjennomsnittlig-rating.
+denne blir også skrevet til fil, og kan også finnes ved frontend
 
-# Liten tid
+# Om Liten tid og valg
 
 Hadde liten tid så kunne ikke gjøre alt til standarden jeg ønsker
 
 - ui
 - ikke ORM
 - valg av database
-
-## Om valg
 
 ## Om Samle struktur
 ideally så ville jeg ha hatt at shows skulle ha en liste med episoder, men fikk problemer med beanpropertyrowmapper så bestemte meg for å ikke ha det sånn, dog med ORM så ville jeg jo hatt det sånn sånn at koblingen ble lik mellom objekt modellen og tabell strukturen i databasen.

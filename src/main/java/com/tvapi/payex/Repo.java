@@ -31,7 +31,6 @@ public class Repo {
     private JdbcTemplate db;
 
     public Repo() {
-        System.out.println("Repo constructor ran");
     }
 
     @EventListener(ApplicationReadyEvent.class)
@@ -41,14 +40,11 @@ public class Repo {
 
 //        populateDbFromApi("Wynonna Earp");
 
-
         for (Show show : shows) {
             populateDbFromApi(show.getName());
         }
 
         logger.info("All shows are now populated from the api, and info rests in database");
-
-        // TODO generate report
 
         deleteFiles();
 
@@ -79,6 +75,11 @@ public class Repo {
             System.out.println("Got exeption when writing to file: " + fileName);
         }
 
+    }
+
+    public String reportAllReports() {
+        String spacer = "\n\n\n";
+        return reportTopNetworks() + spacer + reportTop10Shows() + spacer + reportAllShows();
     }
 
     // * Summary - Skal liste alle registrerte tv-serier
@@ -153,13 +154,17 @@ public class Repo {
                     topShow = show;
                 }
             }
-            lines.add((double) Math.round((sum / mapShow.size() * 100.0) / 100.0) + ";" + network + ";" + topShow.getName() + ";" + topShow.getRating() + ";" + mapShow.size() + "\n");
+            lines.add((sum / mapShow.size()) + ";" + network + ";" + topShow.getName() + ";" + topShow.getRating() + ";" + mapShow.size() + "\n");
         }
 
         lines.sort(Comparator.naturalOrder());
 
         for (int i = lines.size() - 1; i >= lines.size() - 10; i--) {
-            stringBuilder.append(lines.get(i));
+            try {
+                stringBuilder.append(lines.get(i));
+            } catch (Exception e) {
+                break;
+            }
         }
 
         return stringBuilder.toString();
@@ -188,7 +193,6 @@ public class Repo {
 
     public void populateDbFromFile() {
         List<String> showNames = getShowNamesFromFile();
-        System.out.println(showNames);
 
         for (String showName : showNames) {
             insertShow(new Show(showName, -1, -1.0, "-1"));
@@ -322,8 +326,6 @@ public class Repo {
                 networkId = -1;
             }
 
-            System.out.println("show rating + network id " + showRating + " " + networkId);
-
 
             JSONArray episodesArray = json.getJSONObject("_embedded").getJSONArray("episodes");
 
@@ -339,7 +341,6 @@ public class Repo {
                     episodeRating = episodeRatingObj.getDouble("average");
 
                 } catch (Exception e) {
-//                    System.out.println("Error when getting episode rating" + episodeJson.getJSONObject("rating"));
                     episodeRating = -1.0;
                 }
                 episodes.add(new Episode(showId, episodeName, season, episode, episodeRating));
@@ -349,17 +350,5 @@ public class Repo {
         connection.disconnect();
 
         return new ShowWithEpisodes(new Show(name, showId, showRating, networkName), episodes);
-    }
-
-    public void RepoTest() {
-        System.out.println("repo test function ran");
-
-        try {
-            List<Test> testList = db.query("select * from Test", new BeanPropertyRowMapper<>(Test.class));
-            System.out.println(testList);
-        } catch (Exception e) {
-            System.out.println("error in Repo.RepoTest");
-            logger.error(String.valueOf(e));
-        }
     }
 }

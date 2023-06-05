@@ -3,24 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <title>Payex Demo</title>
-    <script>
-        async function getStuff() {
-            const response = await fetch('api/test')
-            // const jsonData = await response.json()
-            console.log(response)
+
+    <style>
+        * {
+            font-family: "Noto Sans", sans-serif;
         }
 
-        console.log("test")
+        pre {
+            font-family: "Noto Sans Mono", monospace;
+        }
 
+        .button-container {
+            /*display: flex;*/
+            /*flex-direction: column;*/
+            /*flex-wrap: wrap;*/
+            /*gap: 16px;*/
+        }
 
-        // fetch('api/test').then((resolve) => resolve.json()).then((data) => console.log(data))
+        button {
+            width: fit-content;
+        }
+    </style>
 
-        // this one works with string data
-        fetch('api/test').then((response) => response.text()).then((text) => console.log(text))
-
-    </script>
 </head>
 <body>
-Heyo
+
+<h1>Click button to get reports</h1>
+
+<div class="button-container">
+    <button onclick="fetchReport('shows')">All Shows</button>
+    <button onclick="fetchReport('topNetworks')">Top 10 Networks</button>
+    <button onclick="fetchReport('topShows')">Top 10 Shows</button>
+    <button onclick="fetchReport('all')">All reports</button>
+
+</div>
+<div class="button-container">
+    <button onclick="downloadReport()">Download Report</button>
+</div>
+<pre id="result-container">
+
+</pre>
 </body>
+<script>
+
+    let fileName = ""
+
+    const preEle = document.getElementById('result-container')
+
+    async function fetchReport(endpoint) {
+        fetch('api/report/' + endpoint).then((response) => response.text()).then((text) => {
+            fileName = endpoint
+            preEle.innerHTML = text
+        })
+    }
+
+    function downloadReport() {
+        if (fileName === "") {
+            alert("fetch a report before downloading")
+        }
+
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(preEle.innerHTML));
+        element.setAttribute('download', 'report' + fileName + '.txt');
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+</script>
+
 </html>

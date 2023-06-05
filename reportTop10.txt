@@ -7,5 +7,5 @@ Dark Matter;8.3;1819;CTV Sci-Fi Channel
 Yellowstone;8.3;27848;Paramount Network
 True Detective;8.2;5;HBO
 Blue Bloods;8.2;100;CBS
+The Simpsons;8.1;83;FOX
 Killjoys;8.1;1788;CTV Sci-Fi Channel
-Stan Lee's Lucky Man;8.1;6775;Sky Showcase

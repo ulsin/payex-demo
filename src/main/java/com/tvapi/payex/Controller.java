@@ -16,11 +16,24 @@ public class Controller {
     @Autowired
     Repo repo;
 
-    @GetMapping("/test")
-    public String getTest(HttpServletResponse response) throws IOException {
-        System.out.println("Controller Get Test was run");
-        repo.RepoTest();
+    @GetMapping("/report/shows")
+    public String getAllShows(HttpServletResponse response) throws IOException {
+        return repo.reportAllShows();
+    }
 
-        return "test from rest";
+    @GetMapping("/report/topNetworks")
+    public String getTopNetworks(HttpServletResponse response) throws IOException {
+        return repo.reportTopNetworks();
+    }
+
+    @GetMapping("/report/topShows")
+    public String getTopShows(HttpServletResponse response) throws IOException {
+        return repo.reportTop10Shows();
+    }
+
+    @GetMapping("/report/all")
+    public String getAllReports(HttpServletResponse response) throws IOException {
+        String spacer = "\n\n\n";
+        return repo.reportTopNetworks() + spacer + repo.reportTop10Shows() + spacer + repo.reportAllShows();
     }
 }
