@@ -1,0 +1,61 @@
+SHOW_NAME;NETWORK;EPISODE_COUNT;
+Real Time with Bill Maher;HBO;633
+Wynonna Earp;Syfy;49
+Masters of Illusion;The CW;130
+Whistleblower;CBS;14
+Insatiable;N/A;22
+Condor;N/A;20
+Castle Rock;N/A;20
+The Sinner;USA Network;32
+Hard to Kill;Discovery Channel;6
+Sharp Objects;HBO;8
+Bite Club;Nine Network;8
+Better Call Saul;AMC;63
+Salvation;CBS;26
+The 100;The CW;100
+Yellowstone;Paramount Network;47
+Fear the Walking Dead;N/A;107
+Stan Lee's Lucky Man;Sky Showcase;28
+Wrecked;TBS;30
+Killjoys;CTV Sci-Fi Channel;50
+DuckTales;Disney XD;69
+Australian Survivor;Network 10;224
+New Amsterdam;NBC;89
+Banshee Origins;N/A;41
+12 Monkeys;Syfy;47
+Taken;NBC;26
+Supergirl;The CW;126
+Designated Survivor;N/A;53
+True Detective;HBO;24
+Blue Bloods;CBS;275
+The Good Doctor;ABC;116
+The Alienist;TNT;18
+One Dollar;N/A;10
+Forged in Fire;History;234
+The Simpsons;FOX;750
+Marvel's The Defenders;N/A;8
+Marvel's Runaways;N/A;33
+Dark Matter;CTV Sci-Fi Channel;39
+Mindhunter;N/A;19
+Marching Orders;N/A;12
+Trust;HBO;0
+Atlanta;FX;41
+Family Guy;FOX;409
+Modern Family;ABC;250
+Counting Cars;History;193
+MARS;National Geographic Channel;12
+Channel Zero;N/A;24
+Janet King;ABC;24
+One-Punch Man;TV Tokyo;24
+Little Dog;CBC;15
+Maniac;N/A;10
+Expedition Unknown;Discovery Channel;115
+Late Night with Seth Meyers;NBC;1421
+Catfish: The TV Show;MTV;216
+Shahs of Sunset;Bravo;128
+Safe;N/A;8
+Mountain Men;History;155
+VICE;Showtime;162
+Zac and Mia;N/A;24
+Broken Trust;Investigation Discovery;10
+Bellevue;CBC;8

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -57,6 +58,8 @@ public class Repo {
         String topNetwork = reportTopNetworks();
         writeReport("reportTopNetwork.txt", topNetwork);
 
+        String allShows = reportAllShows();
+        writeReport("reportAllShows.txt", allShows);
 
         logger.info("Report is written");
     }
@@ -64,6 +67,7 @@ public class Repo {
     public void deleteFiles() {
         new File("reportTop10.txt").delete();
         new File("reportTopNetwork.txt").delete();
+        new File("reportAllShows.txt").delete();
     }
 
     public void writeReport(String fileName, String fileContent) {
@@ -75,6 +79,21 @@ public class Repo {
             System.out.println("Got exeption when writing to file: " + fileName);
         }
 
+    }
+
+    // * Summary - Skal liste alle registrerte tv-serier
+    public String reportAllShows() {
+        List<Show> shows = getAllShows();
+        List<Episode> episodes = getAllEpisodes();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("SHOW_NAME;NETWORK;EPISODE_COUNT;\n");
+
+        for (Show show : shows) {
+            int episodeCount = episodes.stream().filter(f -> show.getShowId() == f.getShowId()).collect(Collectors.toList()).size();
+            stringBuilder.append(show.getName() + ";" + show.getNetwork() + ";" + episodeCount + "\n");
+        }
+
+        return stringBuilder.toString();
     }
 
     // * Top 10 - Skal liste serier sortert på rating
@@ -122,6 +141,7 @@ public class Repo {
             mapShow.add(show);
         }
 
+        // making the entires per network group
         for (String network : showByNetwork.keySet()) {
             List<Show> mapShow = showByNetwork.get(network);
 
@@ -133,7 +153,7 @@ public class Repo {
                     topShow = show;
                 }
             }
-            lines.add(Math.round((sum / mapShow.size()) * 100.0 / 100.0) + ";" + network + ";" + topShow.getName() + ";" + topShow.getRating() + ";" + mapShow.size() + "\n");
+            lines.add((double) Math.round((sum / mapShow.size() * 100.0) / 100.0) + ";" + network + ";" + topShow.getName() + ";" + topShow.getRating() + ";" + mapShow.size() + "\n");
         }
 
         lines.sort(Comparator.naturalOrder());
@@ -217,6 +237,16 @@ public class Repo {
             return db.query("select * from Show", new BeanPropertyRowMapper<>(Show.class));
         } catch (Exception e) {
             System.out.println("Error in getAllShows");
+            logger.error(String.valueOf(e));
+            return null;
+        }
+    }
+
+    public List<Episode> getAllEpisodes() {
+        try {
+            return db.query("select * from Episode", new BeanPropertyRowMapper<>(Episode.class));
+        } catch (Exception e) {
+            System.out.println("Error in getAllEpisodes");
             logger.error(String.valueOf(e));
             return null;
         }
@@ -309,7 +339,7 @@ public class Repo {
                     episodeRating = episodeRatingObj.getDouble("average");
 
                 } catch (Exception e) {
-                    System.out.println("Error when getting episode rating" + episodeJson.getJSONObject("rating"));
+//                    System.out.println("Error when getting episode rating" + episodeJson.getJSONObject("rating"));
                     episodeRating = -1.0;
                 }
                 episodes.add(new Episode(showId, episodeName, season, episode, episodeRating));
