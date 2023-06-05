@@ -18,10 +18,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
@@ -44,12 +41,12 @@ public class Repo {
         populateDbFromFile();
         List<Show> shows = getAllShows();
 
-        populateDbFromApi("Wynonna Earp");
+//        populateDbFromApi("Wynonna Earp");
 
 
-//        for (Show show : shows) {
-//            populateDbFromApi(show.getName());
-//        }
+        for (Show show : shows) {
+            populateDbFromApi(show.getName());
+        }
 
         logger.info("All shows are now populated from the api, and info rests in database");
 
@@ -60,21 +57,22 @@ public class Repo {
         String top10 = reportTop10Shows();
         writeReport("reportTop10.txt", top10);
 
-        reportTopNetworks();
+        String topNetwork = reportTopNetworks();
+        writeReport("reportTopNetwork.txt", topNetwork);
+
 
         logger.info("Report is written");
     }
 
     public void deleteFiles() {
         new File("reportTop10.txt").delete();
+        new File("reportTopNetwork.txt").delete();
     }
 
     public void writeReport(String fileName, String fileContent) {
         try {
-
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
             writer.write(fileContent);
-
             writer.close();
         } catch (Exception e) {
             System.out.println("Got exeption when writing to file: " + fileName);
@@ -103,14 +101,52 @@ public class Repo {
         }
     }
 
-    public void reportTopNetworks() {
+    public String reportTopNetworks() {
 
-        // select avg(rating) from show group by networkId
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("AVERAGE_RATING;NETWORK;TOP_RATED_SHOW;TOP_RATING;SHOW_COUNT\n");
+
+        List<String> lines = new ArrayList<>();
+
+        List<Show> shows = getAllShows();
+
+        Map<Integer, List<Show>> showByNetwork = new HashMap<>();
 
 
-//        List<String> result = db.queryForList("select avg(rating), networkId, count(name) as SHOW_COUNT from show group by networkId", String.class);
+        // Grouping show by network
+        for (Show show : shows) {
+            List<Show> mapShow = showByNetwork.get(show.getNetworkId());
+            if (mapShow == null) {
+                mapShow = new ArrayList<>();
+                // might need to put this outside of if, in case pointers acts wierd
+                showByNetwork.put(show.getNetworkId(), mapShow);
+            }
+            mapShow.add(show);
+        }
 
-//        System.out.println(result);
+        for (Integer networkId : showByNetwork.keySet()) {
+            List<Show> mapShow = showByNetwork.get(networkId);
+
+            double sum = 0.0;
+            Show topShow = mapShow.get(0);
+            for (Show show : mapShow) {
+                sum += show.getRating();
+                if (show.getRating() > topShow.getRating()) {
+                    topShow = show;
+                }
+            }
+
+            lines.add(sum / mapShow.size() + ";" + networkId + ";" + topShow.getName() + ";" + topShow.getRating() + ";" + mapShow.size() + "\n");
+        }
+
+        lines.sort(Comparator.naturalOrder());
+
+        for (int i = lines.size() - 1; i >= lines.size() - 10; i--) {
+            stringBuilder.append(lines.get(i));
+        }
+
+        return stringBuilder.toString();
     }
 
     public void populateDbFromApi(String name) {
@@ -239,17 +275,27 @@ public class Repo {
             JSONObject json = new JSONObject(new JSONTokener(stringBuilder.toString()));
 
             showId = json.getInt("id");
-            showRating = json.getJSONObject("rating").getDouble("average");
+            try {
+                showRating = json.getJSONObject("rating").getDouble("average");
+            } catch (Exception e) {
+                System.out.println("Error in getting showRating");
+                showRating = -1.0;
+            }
 
-            JSONObject networkJson = json.getJSONObject("network");
-            networkId = networkJson.getInt("id");
-            String networkName = networkJson.getString("name");
-            String networkCountry = networkJson.getJSONObject("country").getString("name");
+            try {
+                JSONObject networkJson = json.getJSONObject("network");
+                networkId = networkJson.getInt("id");
+                String networkName = networkJson.getString("name");
+                String networkCountry = networkJson.getJSONObject("country").getString("name");
 
-            System.out.println("show rating + network id" + showRating + " " + networkId);
+                // TODO make sure this goes somewhere
+                Network network = new Network(networkName, networkId, networkCountry);
+            } catch (Exception e) {
+                System.out.println("Error when parsing network");
+                networkId = -1;
+            }
 
-            // TODO make sure this goes somewhere
-            Network network = new Network(networkName, networkId, networkCountry);
+            System.out.println("show rating + network id " + showRating + " " + networkId);
 
 
             JSONArray episodesArray = json.getJSONObject("_embedded").getJSONArray("episodes");
@@ -259,7 +305,16 @@ public class Repo {
                 String episodeName = episodeJson.getString("name");
                 int season = episodeJson.getInt("season");
                 int episode = episodeJson.getInt("number");
-                double episodeRating = episodeJson.getJSONObject("rating").getDouble("average");
+                double episodeRating;
+                try {
+//                    episodeRating = episodeJson.getDouble("rating");
+                    JSONObject episodeRatingObj = episodeJson.getJSONObject("rating");
+                    episodeRating = episodeRatingObj.getDouble("average");
+
+                } catch (Exception e) {
+                    System.out.println("Error when getting episode rating" + episodeJson.getJSONObject("rating"));
+                    episodeRating = -1.0;
+                }
                 episodes.add(new Episode(showId, episodeName, season, episode, episodeRating, networkId));
             }
         }

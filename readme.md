@@ -18,10 +18,20 @@ args if any
 ## next week
 skjønte ikke helt hva som spurtes om her, mange av showene er jo ferdig kjørt, og vil ikke ha noen info om neste uke
 
+## reccomended
+
+skjønte ikke helt denne heller, hva menes?
+
 ## Top 10 - Skal liste serier sortert på rating
 
 ez game ez life
 
+## Top Network
+Gjorde i kode istedenfor i database, skippet å lage network struktur / implementere den ordentlig
+
+## Summary
+
+ez game ez life
 ## Top network - Skal liste "network" samt aktuelle tv-serier basert på gjennomsnittlig-rating.
 
 # Liten tid
