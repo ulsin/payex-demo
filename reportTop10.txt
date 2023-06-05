@@ -2,10 +2,10 @@ name;rating;showId;networkId
 Better Call Saul;8.6;618;AMC
 One-Punch Man;8.5;4201;TV Tokyo
 Mindhunter;8.4;10822;N/A
-Janet King;8.3;4276;ABC
 Dark Matter;8.3;1819;CTV Sci-Fi Channel
 Yellowstone;8.3;27848;Paramount Network
+Janet King;8.3;4276;ABC
 True Detective;8.2;5;HBO
 Blue Bloods;8.2;100;CBS
 The Simpsons;8.1;83;FOX
-Killjoys;8.1;1788;CTV Sci-Fi Channel
+Stan Lee's Lucky Man;8.1;6775;Sky Showcase

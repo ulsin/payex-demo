@@ -5,7 +5,15 @@
 
 ## selve applikasjonen
 
-`./mvnw` i terminal burde funke om man har java 20 instalert, om ikke så bare åpne programmet i intellij, konfigurer med open-jdk-20, og trykk play på main funksjonen i `PayexApplication.java`
+`./mvnw spring-boot:run` i terminal burde funke om man har java 20 instalert, om ikke så bare åpne programmet i intellij, konfigurer med open-jdk-20, og trykk play på main funksjonen i `PayexApplication.java`
+
+man kommer til å få litt errors ved parsing av json, men dette er handlet og er bare å vente på den siste linjen alla
+
+```java
+2023-06-05T14:58:10.753+02:00  INFO 180811 --- [  restartedMain] com.tvapi.payex.Repo                     : Report is written
+```
+
+for å så gå inn i nettleseren på adressen vist over
 
 ## db konsoll
 
