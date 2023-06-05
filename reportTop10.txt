@@ -1,0 +1,11 @@
+name;rating;showId;networkId
+Wynonna Earp;7.5;6767;16
+MARS;-1.0;-1;-1
+Counting Cars;-1.0;-1;-1
+Modern Family;-1.0;-1;-1
+Family Guy;-1.0;-1;-1
+One Dollar;-1.0;-1;-1
+Trust;-1.0;-1;-1
+Marching Orders;-1.0;-1;-1
+Janet King;-1.0;-1;-1
+Mindhunter;-1.0;-1;-1

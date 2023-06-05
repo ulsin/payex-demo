@@ -11,10 +11,13 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,15 +55,62 @@ public class Repo {
 
         // TODO generate report
 
+        deleteFiles();
+
+        String top10 = reportTop10Shows();
+        writeReport("reportTop10.txt", top10);
+
+        reportTopNetworks();
+
+        logger.info("Report is written");
+    }
+
+    public void deleteFiles() {
+        new File("reportTop10.txt").delete();
+    }
+
+    public void writeReport(String fileName, String fileContent) {
+        try {
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
+            writer.write(fileContent);
+
+            writer.close();
+        } catch (Exception e) {
+            System.out.println("Got exeption when writing to file: " + fileName);
+        }
 
     }
 
-    public void reportTop10Shows() {
-//        db.query();
+    // * Top 10 - Skal liste serier sortert på rating
+    public String reportTop10Shows() {
+        try {
+            List<Show> top10Shows = db.query("select * from Show order by rating desc limit 10", new BeanPropertyRowMapper<>(Show.class));
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+            stringBuilder.append("name;rating;showId;networkId\n");
+
+            for (Show show : top10Shows) {
+                stringBuilder.append(show.getName() + ';' + show.getRating() + ';' + show.getShowId() + ';' + show.getNetworkId() + '\n');
+            }
+
+            return stringBuilder.toString();
+        } catch (Exception e) {
+            System.out.println("Error when getting top 10 report");
+            logger.error(String.valueOf(e));
+            return null;
+        }
     }
 
-    public void reportTopNetwork() {
+    public void reportTopNetworks() {
 
+        // select avg(rating) from show group by networkId
+
+
+//        List<String> result = db.queryForList("select avg(rating), networkId, count(name) as SHOW_COUNT from show group by networkId", String.class);
+
+//        System.out.println(result);
     }
 
     public void populateDbFromApi(String name) {
