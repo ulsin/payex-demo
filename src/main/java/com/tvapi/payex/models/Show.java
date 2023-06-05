@@ -6,16 +6,16 @@ public class Show {
 
     private double rating;
 
-    private int networkId;
+    private String network;
 
     public Show() {
     }
 
-    public Show(String name, int showId, double rating, int networkId) {
+    public Show(String name, int showId, double rating, String network) {
         this.name = name;
         this.showId = showId;
         this.rating = rating;
-        this.networkId = networkId;
+        this.network = network;
     }
 
     @Override
@@ -24,7 +24,7 @@ public class Show {
                 "name='" + name + '\'' +
                 ", showId=" + showId +
                 ", rating=" + rating +
-                ", networkId=" + networkId +
+                ", network=" + network +
                 '}';
     }
 
@@ -52,11 +52,11 @@ public class Show {
         this.rating = rating;
     }
 
-    public int getNetworkId() {
-        return networkId;
+    public String getNetwork() {
+        return network;
     }
 
-    public void setNetworkId(int networkId) {
-        this.networkId = networkId;
+    public void setNetwork(String network) {
+        this.network = network;
     }
 }

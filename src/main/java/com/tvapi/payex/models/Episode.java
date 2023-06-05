@@ -11,7 +11,7 @@ public class Episode {
     public Episode() {
     }
 
-    public Episode(int showId, String name, int season, int episode, double rating, int networkId) {
+    public Episode(int showId, String name, int season, int episode, double rating) {
         this.showId = showId;
         this.name = name;
         this.season = season;

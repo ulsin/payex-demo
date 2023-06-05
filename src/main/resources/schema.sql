@@ -8,10 +8,10 @@ create table Test
 
 create table Show
 (
-    name      varchar(255) not null,
-    showId    int          not null,
-    rating    double       not null,
-    networkId int          not null,
+    name    varchar(255) not null,
+    showId  int          not null,
+    rating  double       not null,
+    network varchar(255) not null,
     primary key (name)
 );
 

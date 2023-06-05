@@ -1,11 +1,11 @@
 AVERAGE_RATING;NETWORK;TOP_RATED_SHOW;TOP_RATING;SHOW_COUNT
-8.6;20;Better Call Saul;8.6;1
-8.5;76;One-Punch Man;8.5;1
-8.3;34;Yellowstone;8.3;1
-8.3;114;Janet King;8.3;1
-8.2;7;Dark Matter;8.3;2
-8.1;63;Stan Lee's Lucky Man;8.1;1
-8.0;9;VICE;8.0;1
-7.8;4;The Simpsons;8.1;2
-7.6;52;Shahs of Sunset;7.6;1
-7.6;3;The Good Doctor;7.6;2
+8.6;AMC;Better Call Saul;8.6;1
+8.5;TV Tokyo;One-Punch Man;8.5;1
+8.3;Paramount Network;Yellowstone;8.3;1
+8.2;CTV Sci-Fi Channel;Dark Matter;8.3;2
+8.1;Sky Showcase;Stan Lee's Lucky Man;8.1;1
+8.0;Showtime;VICE;8.0;1
+7.8;FOX;The Simpsons;8.1;2
+7.833333333333333;ABC;Janet King;8.3;3
+7.6;Bravo;Shahs of Sunset;7.6;1
+7.5;National Geographic Channel;MARS;7.5;1

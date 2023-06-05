@@ -1,7 +1,6 @@
 package com.tvapi.payex;
 
 import com.tvapi.payex.models.*;
-import org.apache.tomcat.util.json.JSONParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +16,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.*;
 
-import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -90,7 +87,7 @@ public class Repo {
             stringBuilder.append("name;rating;showId;networkId\n");
 
             for (Show show : top10Shows) {
-                stringBuilder.append(show.getName() + ';' + show.getRating() + ';' + show.getShowId() + ';' + show.getNetworkId() + '\n');
+                stringBuilder.append(show.getName() + ';' + show.getRating() + ';' + show.getShowId() + ';' + show.getNetwork() + '\n');
             }
 
             return stringBuilder.toString();
@@ -111,22 +108,22 @@ public class Repo {
 
         List<Show> shows = getAllShows();
 
-        Map<Integer, List<Show>> showByNetwork = new HashMap<>();
+        Map<String, List<Show>> showByNetwork = new HashMap<>();
 
 
         // Grouping show by network
         for (Show show : shows) {
-            List<Show> mapShow = showByNetwork.get(show.getNetworkId());
+            List<Show> mapShow = showByNetwork.get(show.getNetwork());
             if (mapShow == null) {
                 mapShow = new ArrayList<>();
                 // might need to put this outside of if, in case pointers acts wierd
-                showByNetwork.put(show.getNetworkId(), mapShow);
+                showByNetwork.put(show.getNetwork(), mapShow);
             }
             mapShow.add(show);
         }
 
-        for (Integer networkId : showByNetwork.keySet()) {
-            List<Show> mapShow = showByNetwork.get(networkId);
+        for (String network : showByNetwork.keySet()) {
+            List<Show> mapShow = showByNetwork.get(network);
 
             double sum = 0.0;
             Show topShow = mapShow.get(0);
@@ -136,8 +133,7 @@ public class Repo {
                     topShow = show;
                 }
             }
-
-            lines.add(sum / mapShow.size() + ";" + networkId + ";" + topShow.getName() + ";" + topShow.getRating() + ";" + mapShow.size() + "\n");
+            lines.add(Math.round((sum / mapShow.size()) * 100.0 / 100.0) + ";" + network + ";" + topShow.getName() + ";" + topShow.getRating() + ";" + mapShow.size() + "\n");
         }
 
         lines.sort(Comparator.naturalOrder());
@@ -175,7 +171,7 @@ public class Repo {
         System.out.println(showNames);
 
         for (String showName : showNames) {
-            insertShow(new Show(showName, -1, -1.0, -1));
+            insertShow(new Show(showName, -1, -1.0, "-1"));
         }
     }
 
@@ -198,8 +194,8 @@ public class Repo {
 
     public void insertShow(Show show) {
         try {
-            db.update("insert into Show(name, showId, rating, networkId) values(?, ?, ?, ?)",
-                    show.getName(), show.getShowId(), show.getRating(), show.getNetworkId());
+            db.update("insert into Show(name, showId, rating, network) values(?, ?, ?, ?)",
+                    show.getName(), show.getShowId(), show.getRating(), show.getNetwork());
         } catch (Exception e) {
             System.out.println("Error in Repo.insertShow()");
             logger.error(String.valueOf(e));
@@ -228,7 +224,7 @@ public class Repo {
 
     public void updateShowIdByName(Show show) {
         try {
-            db.update("update Show set showId=?, rating=?, networkId=? where name=?", show.getShowId(), show.getRating(), show.getNetworkId(), show.getName());
+            db.update("update Show set showId=?, rating=?, network=? where name=?", show.getShowId(), show.getRating(), show.getNetwork(), show.getName());
         } catch (Exception e) {
             System.out.println("Error in Repo.updateShowByName()");
             logger.error(String.valueOf(e));
@@ -241,6 +237,7 @@ public class Repo {
         int showId = -1;
         double showRating = -1.0;
         int networkId = -1;
+        String networkName = "N/A";
         List<Episode> episodes = new ArrayList<>();
 
 
@@ -285,7 +282,7 @@ public class Repo {
             try {
                 JSONObject networkJson = json.getJSONObject("network");
                 networkId = networkJson.getInt("id");
-                String networkName = networkJson.getString("name");
+                networkName = networkJson.getString("name");
                 String networkCountry = networkJson.getJSONObject("country").getString("name");
 
                 // TODO make sure this goes somewhere
@@ -315,13 +312,13 @@ public class Repo {
                     System.out.println("Error when getting episode rating" + episodeJson.getJSONObject("rating"));
                     episodeRating = -1.0;
                 }
-                episodes.add(new Episode(showId, episodeName, season, episode, episodeRating, networkId));
+                episodes.add(new Episode(showId, episodeName, season, episode, episodeRating));
             }
         }
 
         connection.disconnect();
 
-        return new ShowWithEpisodes(new Show(name, showId, showRating, networkId), episodes);
+        return new ShowWithEpisodes(new Show(name, showId, showRating, networkName), episodes);
     }
 
     public void RepoTest() {

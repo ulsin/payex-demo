@@ -1,11 +1,11 @@
 name;rating;showId;networkId
-Better Call Saul;8.6;618;20
-One-Punch Man;8.5;4201;76
+Better Call Saul;8.6;618;AMC
+One-Punch Man;8.5;4201;TV Tokyo
 Mindhunter;8.4;10822;-1
-Dark Matter;8.3;1819;7
-Yellowstone;8.3;27848;34
-Janet King;8.3;4276;114
-True Detective;8.2;5;8
-Blue Bloods;8.2;100;2
-Stan Lee's Lucky Man;8.1;6775;63
-Killjoys;8.1;1788;7
+Dark Matter;8.3;1819;CTV Sci-Fi Channel
+Janet King;8.3;4276;ABC
+Yellowstone;8.3;27848;Paramount Network
+Blue Bloods;8.2;100;CBS
+True Detective;8.2;5;HBO
+Stan Lee's Lucky Man;8.1;6775;Sky Showcase
+Killjoys;8.1;1788;CTV Sci-Fi Channel
