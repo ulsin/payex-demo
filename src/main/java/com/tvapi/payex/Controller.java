@@ -1,9 +1,6 @@
 package com.tvapi.payex;
 
 
-
-
-
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +11,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("api")
-public class TvController {
+public class Controller {
 
     @Autowired
     Repo repo;
